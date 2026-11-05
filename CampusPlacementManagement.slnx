@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/CampusPlacementManagement.Api/CampusPlacementManagement.Api.csproj" />
+    <Project Path="src/CampusPlacementManagement.Application/CampusPlacementManagement.Application.csproj" />
+    <Project Path="src/CampusPlacementManagement.Core/CampusPlacementManagement.Core.csproj" />
+    <Project Path="src/CampusPlacementManagement.Infrastructure/CampusPlacementManagement.Infrastructure.csproj" />
+  </Folder>
+</Solution>
