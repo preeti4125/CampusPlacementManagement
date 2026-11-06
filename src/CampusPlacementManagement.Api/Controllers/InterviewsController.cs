@@ -1,9 +1,6 @@
-﻿using CampusPlacementManagement.Application.DTOs;
-using CampusPlacementManagement.Core.Entities;
-using CampusPlacementManagement.Core.Enums;
-using CampusPlacementManagement.Infrastructure.Data;
+﻿using CampusPlacementManagement.Application.DTOs.Interviews;
+using CampusPlacementManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CampusPlacementManagement.Api.Controllers;
 
@@ -11,27 +8,12 @@ namespace CampusPlacementManagement.Api.Controllers;
 [Route("api/[controller]")]
 public class InterviewsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    public InterviewsController(ApplicationDbContext context) => _context = context;
+    private readonly IInterviewService _service;
+    public InterviewsController(IInterviewService service) => _service = service;
 
     [HttpGet("schedules")]
-    public async Task<IActionResult> GetSchedules() =>
-        Ok(await _context.InterviewSchedules.Include(s => s.JobApplication).ToListAsync());
+    public async Task<IActionResult> GetSchedules() => Ok(await _service.GetSchedulesAsync());
 
     [HttpPost("schedule")]
-    public async Task<IActionResult> Schedule(ScheduleInterviewDto dto)
-    {
-        var schedule = new InterviewSchedule
-        {
-            ApplicationId = dto.ApplicationId,
-            RoundId = dto.RoundId,
-            ScheduledAt = dto.ScheduledAt,
-            MeetingLinkOrVenue = dto.MeetingLinkOrVenue,
-            Feedback = dto.Feedback,
-            Status = InterviewStatus.Scheduled
-        };
-        _context.InterviewSchedules.Add(schedule);
-        await _context.SaveChangesAsync();
-        return Ok(schedule);
-    }
+    public async Task<IActionResult> Schedule(ScheduleInterviewDto dto) => Ok(await _service.ScheduleAsync(dto));
 }

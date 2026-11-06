@@ -1,10 +1,8 @@
-﻿using CampusPlacementManagement.Application.Interfaces;
-using CampusPlacementManagement.Application.Services;
+﻿using CampusPlacementManagement.Api.Extensions;
+using CampusPlacementManagement.Api.Middlewares;
 using CampusPlacementManagement.Core.Entities;
-using CampusPlacementManagement.Core.Interfaces.Repositories;
 using CampusPlacementManagement.Infrastructure.Data;
-using CampusPlacementManagement.Infrastructure.Data.Seed;
-using CampusPlacementManagement.Infrastructure.Repositories;
+using CampusPlacementManagement.Infrastructure.Data.Seeding;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -32,20 +30,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// 1. Register Repositories & UnitOfWork (Infrastructure -> Core interfaces)
-builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
-builder.Services.AddScoped<ICollegeRepository, CollegeRepository>();
-builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
-builder.Services.AddScoped<IJobOpeningRepository, JobOpeningRepository>();
-builder.Services.AddScoped<IStudentRepository, StudentRepository>();
-builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
-
-// 2. Register Application Services (Application interfaces -> Application services)
-builder.Services.AddScoped<ICollegeService, CollegeService>();
-builder.Services.AddScoped<IJobService, JobService>();
-builder.Services.AddScoped<IStudentService, StudentService>();
-builder.Services.AddScoped<ICompanyService, CompanyService>();
+builder.Services.AddPlacementServices(builder.Configuration);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -53,10 +38,11 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+app.UseMiddleware<GlobalExceptionHandlerMiddleware>();
+
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-    await DbInitializer.SeedAsync(services);
+    await DatabaseSeeder.SeedAsync(scope.ServiceProvider);
 }
 
 if (app.Environment.IsDevelopment())

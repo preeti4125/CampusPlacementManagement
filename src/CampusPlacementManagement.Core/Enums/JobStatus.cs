@@ -1,9 +1,2 @@
 ﻿namespace CampusPlacementManagement.Core.Enums;
-
-public enum JobStatus
-{
-    Draft = 1,
-    Published,
-    Closed,
-    Cancelled
-}
+public enum JobStatus { Draft = 0, Published = 1, Closed = 2, Cancelled = 3 }

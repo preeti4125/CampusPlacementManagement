@@ -5,4 +5,8 @@
     <Project Path="src/CampusPlacementManagement.Core/CampusPlacementManagement.Core.csproj" />
     <Project Path="src/CampusPlacementManagement.Infrastructure/CampusPlacementManagement.Infrastructure.csproj" />
   </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/CampusPlacementManagement.IntegrationTests/CampusPlacementManagement.IntegrationTests.csproj" />
+    <Project Path="tests/CampusPlacementManagement.UnitTests/CampusPlacementManagement.UnitTests.csproj" />
+  </Folder>
 </Solution>

@@ -1,13 +1,2 @@
 ﻿namespace CampusPlacementManagement.Core.Enums;
-
-public enum ApplicationStatus
-{
-    Applied = 1,
-    UnderReview,
-    Shortlisted,
-    Rejected,
-    InterviewScheduled,
-    Selected,
-    NotSelected,
-    Withdrawn
-}
+public enum ApplicationStatus { Applied = 1, UnderReview = 2, Shortlisted = 3, Rejected = 4, InterviewScheduled = 5, Selected = 6 }

@@ -1,10 +1,2 @@
 ﻿namespace CampusPlacementManagement.Core.Enums;
-
-public enum AccountStatus
-{
-    Pending = 1,
-    Approved,
-    Rejected,
-    Suspended,
-    Inactive
-}
+public enum AccountStatus { Pending = 0, Approved = 1, Rejected = 2, Suspended = 3, Inactive = 4 }
