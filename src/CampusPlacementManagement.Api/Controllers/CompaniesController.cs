@@ -1,9 +1,6 @@
 ﻿using CampusPlacementManagement.Application.DTOs;
-using CampusPlacementManagement.Core.Entities;
-using CampusPlacementManagement.Core.Enums;
-using CampusPlacementManagement.Infrastructure.Data;
+using CampusPlacementManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CampusPlacementManagement.Api.Controllers;
 
@@ -11,27 +8,13 @@ namespace CampusPlacementManagement.Api.Controllers;
 [Route("api/[controller]")]
 public class CompaniesController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    public CompaniesController(ApplicationDbContext context) => _context = context;
+    private readonly ICompanyService _service;
+    public CompaniesController(ICompanyService service) => _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll() => Ok(await _context.Companies.ToListAsync());
+    public async Task<IActionResult> GetAll() => Ok(await _service.GetAllCompaniesAsync());
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateCompanyDto dto)
-    {
-        var company = new Company
-        {
-            CompanyName = dto.CompanyName,
-            CompanyEmail = dto.CompanyEmail,
-            Website = dto.Website,
-            Industry = dto.Industry,
-            Address = dto.Address,
-            Description = dto.Description,
-            Status = (AccountStatus)1
-        };
-        _context.Companies.Add(company);
-        await _context.SaveChangesAsync();
-        return Ok(company);
-    }
+    public async Task<IActionResult> Create(CreateCompanyDto dto) =>
+        Ok(await _service.CreateCompanyAsync(dto));
 }

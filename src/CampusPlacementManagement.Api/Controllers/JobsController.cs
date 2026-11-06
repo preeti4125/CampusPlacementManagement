@@ -1,9 +1,6 @@
 ﻿using CampusPlacementManagement.Application.DTOs;
-using CampusPlacementManagement.Core.Entities;
-using CampusPlacementManagement.Core.Enums;
-using CampusPlacementManagement.Infrastructure.Data;
+using CampusPlacementManagement.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace CampusPlacementManagement.Api.Controllers;
 
@@ -11,52 +8,27 @@ namespace CampusPlacementManagement.Api.Controllers;
 [Route("api/[controller]")]
 public class JobsController : ControllerBase
 {
-    private readonly ApplicationDbContext _context;
-    public JobsController(ApplicationDbContext context) => _context = context;
+    private readonly IJobService _service;
+    public JobsController(IJobService service) => _service = service;
 
     [HttpGet]
-    public async Task<IActionResult> GetAll() => 
-        Ok(await _context.JobOpenings.Include(j => j.Company).ToListAsync());
+    public async Task<IActionResult> GetAll() => Ok(await _service.GetAllJobsAsync());
 
     [HttpPost]
-    public async Task<IActionResult> Create(CreateJobOpeningDto dto)
-    {
-        var job = new JobOpening
-        {
-            CompanyId = dto.CompanyId,
-            CreatedByHRId = dto.CreatedByHRId,
-            JobTitle = dto.JobTitle,
-            JobDescription = dto.JobDescription,
-            JobType = dto.JobType,
-            Location = dto.Location,
-            SalaryPackage = dto.SalaryPackage,
-            MinimumCGPA = dto.MinimumCGPA,
-            MaximumBacklogs = dto.MaximumBacklogs,
-            ApplicationDeadline = dto.ApplicationDeadline,
-            IsOpenToAllColleges = dto.IsOpenToAllColleges,
-            Status = (JobStatus)1
-        };
-        _context.JobOpenings.Add(job);
-        await _context.SaveChangesAsync();
-        return Ok(job);
-    }
+    public async Task<IActionResult> Create(CreateJobOpeningDto dto) =>
+        Ok(await _service.CreateJobAsync(dto));
 
     [HttpPost("apply")]
     public async Task<IActionResult> Apply(ApplyJobDto dto)
     {
-        var exists = await _context.JobApplications
-            .AnyAsync(a => a.JobId == dto.JobId && a.StudentId == dto.StudentId);
-        if (exists) return BadRequest("Student has already applied to this job opening.");
-
-        var application = new JobApplication
+        try
         {
-            JobId = dto.JobId,
-            StudentId = dto.StudentId,
-            Status = (ApplicationStatus)1
-        };
-
-        _context.JobApplications.Add(application);
-        await _context.SaveChangesAsync();
-        return Ok(application);
+            var application = await _service.ApplyForJobAsync(dto);
+            return Ok(application);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
     }
 }

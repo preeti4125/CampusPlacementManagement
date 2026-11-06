@@ -1,6 +1,10 @@
-﻿using CampusPlacementManagement.Core.Entities;
+﻿using CampusPlacementManagement.Application.Interfaces;
+using CampusPlacementManagement.Application.Services;
+using CampusPlacementManagement.Core.Entities;
+using CampusPlacementManagement.Core.Interfaces.Repositories;
 using CampusPlacementManagement.Infrastructure.Data;
 using CampusPlacementManagement.Infrastructure.Data.Seed;
+using CampusPlacementManagement.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,6 +31,21 @@ builder.Services.AddIdentityCore<ApplicationUser>(options =>
 .AddRoles<IdentityRole>()
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
+
+// 1. Register Repositories & UnitOfWork (Infrastructure -> Core interfaces)
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+builder.Services.AddScoped<ICollegeRepository, CollegeRepository>();
+builder.Services.AddScoped<ICompanyRepository, CompanyRepository>();
+builder.Services.AddScoped<IJobOpeningRepository, JobOpeningRepository>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IJobApplicationRepository, JobApplicationRepository>();
+
+// 2. Register Application Services (Application interfaces -> Application services)
+builder.Services.AddScoped<ICollegeService, CollegeService>();
+builder.Services.AddScoped<IJobService, JobService>();
+builder.Services.AddScoped<IStudentService, StudentService>();
+builder.Services.AddScoped<ICompanyService, CompanyService>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
